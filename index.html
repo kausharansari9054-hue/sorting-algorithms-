@@ -6,80 +6,150 @@
 <title>Sorting Algorithms Visualizer</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #101827;
-    color: white;
-    text-align: center;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101827;
+  color: #f8fafc;
 }
 
 .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 25px 15px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 24px 16px;
 }
 
-h1 {
-    color: #38bdf8;
-}
+header { text-align: center; }
 
-p {
-    color: #cbd5e1;
+h1 { color: #38bdf8; }
+
+.subtitle { color: #cbd5e1; }
+
+.panel {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 18px 0;
 }
 
 input, select, button {
-    padding: 12px;
-    margin: 7px;
-    border-radius: 8px;
-    border: none;
-    font-size: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  margin: 5px;
+  font-size: 15px;
 }
 
 input, select {
-    width: 90%;
-    max-width: 450px;
+  background: #0f172a;
+  color: white;
+  width: min(100%, 420px);
 }
 
 button {
-    background: #38bdf8;
-    color: #101827;
-    font-weight: bold;
-    cursor: pointer;
+  background: #38bdf8;
+  color: #082f49;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-button:hover {
-    background: #0ea5e9;
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
-#bars {
-    height: 300px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 25px;
+.controls { text-align: center; }
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 16px 0;
 }
 
-.bar {
-    background: #38bdf8;
-    flex: 1;
-    max-width: 50px;
-    border-radius: 5px 5px 0 0;
-    color: white;
-    font-size: 12px;
-    padding-top: 5px;
+.stat {
+  background: #0f172a;
+  padding: 12px 18px;
+  border-radius: 10px;
+  min-width: 120px;
 }
 
-#result {
-    margin-top: 20px;
-    color: #4ade80;
-    font-size: 18px;
-    word-wrap: break-word;
+.stat span {
+  display: block;
+  color: #38bdf8;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+#visual {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  min-height: 100px;
+  padding: 20px 5px;
+}
+
+.card {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #334155;
+  border: 2px solid #64748b;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  transition: transform .25s, background .25s;
+}
+
+.card.compare {
+  background: #f59e0b;
+  color: #111827;
+  transform: translateY(-8px);
+}
+
+.card.swap {
+  background: #f43f5e;
+  color: white;
+  transform: scale(1.12);
+}
+
+.card.pivot {
+  background: #a855f7;
+  color: white;
+}
+
+.card.sorted {
+  background: #22c55e;
+  color: #052e16;
+  border-color: #86efac;
+}
+
+#message {
+  text-align: center;
+  color: #e2e8f0;
+  min-height: 48px;
+  line-height: 1.6;
+}
+
+#complexity {
+  color: #cbd5e1;
+  text-align: center;
+}
+
+input[type="range"] { width: 220px; }
+
+footer {
+  text-align: center;
+  color: #94a3b8;
+  padding: 20px;
 }
 </style>
 </head>
@@ -87,150 +157,435 @@ button:hover {
 <body>
 <div class="container">
 
-<h1>Sorting Algorithms Visualizer</h1>
-<p>Enter numbers and visualize how sorting works!</p>
+<header>
+  <h1>Sorting Algorithms Visualizer</h1>
+  <p class="subtitle">
+    Explore how different sorting algorithms work step by step.
+  </p>
+</header>
 
-<input id="numbers" type="text"
-placeholder="Enter numbers: 45, 12, 78, 23, 9">
+<div class="panel controls">
+  <input id="numbers"
+    value="45, 12, 78, 23, 9, 56, 31"
+    placeholder="Enter numbers separated by commas">
 
-<br>
+  <br>
 
-<select id="algorithm">
-<option value="bubble">Bubble Sort</option>
-<option value="selection">Selection Sort</option>
-<option value="insertion">Insertion Sort</option>
-<option value="merge">Merge Sort</option>
-<option value="quick">Quick Sort</option>
-</select>
+  <select id="algorithm">
+    <option value="bubble">Bubble Sort</option>
+    <option value="selection">Selection Sort</option>
+    <option value="insertion">Insertion Sort</option>
+    <option value="merge">Merge Sort</option>
+    <option value="quick">Quick Sort</option>
+  </select>
 
-<br>
+  <button onclick="randomNumbers()">Random Numbers</button>
+  <button onclick="startSort()">Start Sorting</button>
+  <button onclick="togglePlay()" id="playBtn">Pause</button>
+  <button onclick="resetSort()">Reset</button>
 
-<button onclick="sortNumbers()">Sort Numbers</button>
-<button onclick="randomNumbers()">Random Numbers</button>
+  <br><br>
 
-<div id="bars"></div>
-<div id="result"></div>
+  <label>
+    Animation Speed:
+    <input id="speed" type="range" min="50" max="1000"
+      value="450" step="50">
+  </label>
+  <span id="speedText">450 ms</span>
+</div>
+
+<div class="stats">
+  <div class="stat">Comparisons<span id="comparisons">0</span></div>
+  <div class="stat">Swaps / Moves<span id="swaps">0</span></div>
+  <div class="stat">Steps<span id="steps">0</span></div>
+</div>
+
+<div class="panel">
+  <h2 style="text-align:center">Animation Area</h2>
+  <div id="visual"></div>
+  <div id="message">Enter numbers and click Start Sorting.</div>
+  <p id="complexity"></p>
+</div>
+
+<footer>
+  Sorting Algorithms Project · Python · HTML · CSS · JavaScript
+</footer>
 
 </div>
 
 <script>
+let original = [];
+let frames = [];
+let frameIndex = 0;
+let playing = false;
+let timer = null;
+
+const $ = id => document.getElementById(id);
+
+$("speed").addEventListener("input", () => {
+  $("speedText").textContent = $("speed").value + " ms";
+});
+
+function readNumbers() {
+  const text = $("numbers").value.trim();
+
+  if (!text) return null;
+
+  const values = text.split(/[,\s]+/).map(Number);
+
+  if (values.some(n => !Number.isFinite(n)) ||
+      values.length > 40) {
+    return null;
+  }
+
+  return values;
+}
+
 function randomNumbers() {
-    let nums = Array.from({length: 10}, () =>
-        Math.floor(Math.random() * 100) + 1
-    );
+  const nums = Array.from({length: 12},
+    () => Math.floor(Math.random() * 90) + 10);
 
-    document.getElementById("numbers").value = nums.join(", ");
-    showBars(nums);
+  $("numbers").value = nums.join(", ");
+  resetSort();
 }
 
-function showBars(nums) {
-    let bars = document.getElementById("bars");
-    bars.innerHTML = "";
-
-    let max = Math.max(...nums, 1);
-
-    nums.forEach(num => {
-        let bar = document.createElement("div");
-        bar.className = "bar";
-        bar.style.height = (num / max * 250) + "px";
-        bar.textContent = num;
-        bars.appendChild(bar);
-    });
+function stopTimer() {
+  clearTimeout(timer);
+  timer = null;
 }
 
+function resetSort() {
+  playing = false;
+  stopTimer();
+  frames = [];
+  frameIndex = 0;
+  $("playBtn").textContent = "Play";
+  $("comparisons").textContent = 0;
+  $("swaps").textContent = 0;
+  $("steps").textContent = 0;
+
+  const nums = readNumbers();
+
+  if (nums) {
+    original = [...nums];
+    draw(nums, [], "Enter numbers and click Start Sorting.");
+  } else {
+    $("visual").innerHTML = "";
+    $("message").textContent = "Please enter valid numbers.";
+  }
+}
+
+function draw(arr, marks = [], message = "") {
+  const visual = $("visual");
+  visual.innerHTML = "";
+
+  arr.forEach((num, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.textContent = num;
+
+    if (marks.includes(i)) {
+      card.classList.add("compare");
+    }
+
+    visual.appendChild(card);
+  });
+
+  $("message").textContent = message;
+}
+
+function makeFrame(arr, marks, message, type = "compare") {
+  frames.push({
+    arr: [...arr],
+    marks: [...marks],
+    message,
+    type,
+    comparisons: comparisonCount,
+    swaps: swapCount
+  });
+}
+
+let comparisonCount = 0;
+let swapCount = 0;
+
+function swap(a, i, j, message) {
+  [a[i], a[j]] = [a[j], a[i]];
+  swapCount++;
+
+  makeFrame(a, [i, j], message, "swap");
+}
+
+// BUBBLE SORT
 function bubbleSort(a) {
-    for (let i = 0; i < a.length; i++) {
-        for (let j = 0; j < a.length - i - 1; j++) {
-            if (a[j] > a[j + 1]) {
-                [a[j], a[j + 1]] = [a[j + 1], a[j]];
-            }
-        }
+  for (let i = 0; i < a.length; i++) {
+    let changed = false;
+
+    for (let j = 0; j < a.length - i - 1; j++) {
+      comparisonCount++;
+
+      makeFrame(a, [j, j + 1],
+        `Bubble Sort: comparing ${a[j]} and ${a[j + 1]}`);
+
+      if (a[j] > a[j + 1]) {
+        swap(a, j, j + 1,
+          `Swapping ${a[j + 1]} and ${a[j]}`);
+        changed = true;
+      }
     }
-    return a;
+
+    if (!changed) break;
+  }
+
+  makeFrame(a, [], "Bubble Sort completed!", "sorted");
 }
 
+// SELECTION SORT
 function selectionSort(a) {
-    for (let i = 0; i < a.length; i++) {
-        let min = i;
+  for (let i = 0; i < a.length - 1; i++) {
+    let min = i;
 
-        for (let j = i + 1; j < a.length; j++) {
-            if (a[j] < a[min]) min = j;
-        }
+    makeFrame(a, [min], `Selection Sort: finding minimum`);
 
-        [a[i], a[min]] = [a[min], a[i]];
+    for (let j = i + 1; j < a.length; j++) {
+      comparisonCount++;
+
+      makeFrame(a, [min, j],
+        `Comparing current minimum ${a[min]} with ${a[j]}`);
+
+      if (a[j] < a[min]) {
+        min = j;
+        makeFrame(a, [min],
+          `New minimum selected: ${a[min]}`);
+      }
     }
-    return a;
+
+    if (min !== i) {
+      swap(a, i, min,
+        `Placing minimum ${a[min]} at position ${i + 1}`);
+    }
+  }
+
+  makeFrame(a, [], "Selection Sort completed!", "sorted");
 }
 
+// INSERTION SORT
 function insertionSort(a) {
-    for (let i = 1; i < a.length; i++) {
-        let key = a[i];
-        let j = i - 1;
+  for (let i = 1; i < a.length; i++) {
+    const key = a[i];
+    let j = i - 1;
 
-        while (j >= 0 && a[j] > key) {
-            a[j + 1] = a[j];
-            j--;
-        }
+    makeFrame(a, [i],
+      `Insertion Sort: inserting ${key} into sorted section`);
 
-        a[j + 1] = key;
-    }
-    return a;
-}
+    while (j >= 0) {
+      comparisonCount++;
 
-function mergeSort(a) {
-    if (a.length <= 1) return a;
+      makeFrame(a, [j, j + 1],
+        `Comparing ${a[j]} with ${key}`);
 
-    let mid = Math.floor(a.length / 2);
-    let left = mergeSort(a.slice(0, mid));
-    let right = mergeSort(a.slice(mid));
+      if (a[j] <= key) break;
 
-    let result = [];
+      a[j + 1] = a[j];
+      swapCount++;
 
-    while (left.length && right.length) {
-        result.push(left[0] < right[0] ? left.shift() : right.shift());
+      makeFrame(a, [j, j + 1],
+        `Moving ${a[j]} one position right`, "swap");
+
+      j--;
     }
 
-    return result.concat(left, right);
+    a[j + 1] = key;
+    swapCount++;
+
+    makeFrame(a, [j + 1],
+      `Inserted ${key} at its correct position`);
+  }
+
+  makeFrame(a, [], "Insertion Sort completed!", "sorted");
 }
 
-function quickSort(a) {
-    if (a.length <= 1) return a;
+// MERGE SORT
+function mergeSort(a, left = 0, right = a.length - 1) {
+  if (left >= right) return;
 
-    let pivot = a[a.length - 1];
-    let left = a.filter((x, i) => x <= pivot && i !== a.length - 1);
-    let right = a.filter(x => x > pivot);
+  const mid = Math.floor((left + right) / 2);
 
-    return quickSort(left).concat([pivot], quickSort(right));
-}
+  makeFrame(a, range(left, right),
+    `Merge Sort: splitting range ${left + 1} to ${right + 1}`);
 
-function sortNumbers() {
-    let input = document.getElementById("numbers").value;
+  mergeSort(a, left, mid);
+  mergeSort(a, mid + 1, right);
 
-    let nums = input.split(/[,\s]+/)
-        .filter(x => x !== "")
-        .map(Number);
+  const temp = [];
+  let i = left;
+  let j = mid + 1;
 
-    if (nums.length === 0 || nums.some(x => !Number.isFinite(x))) {
-        document.getElementById("result").textContent =
-            "Please enter valid numbers!";
-        return;
+  while (i <= mid && j <= right) {
+    comparisonCount++;
+
+    makeFrame(a, [i, j],
+      `Merge: comparing ${a[i]} and ${a[j]}`);
+
+    if (a[i] <= a[j]) {
+      temp.push(a[i++]);
+    } else {
+      temp.push(a[j++]);
     }
+  }
 
-    let algorithm = document.getElementById("algorithm").value;
-    let sorted;
+  while (i <= mid) temp.push(a[i++]);
+  while (j <= right) temp.push(a[j++]);
 
-    if (algorithm === "bubble") sorted = bubbleSort([...nums]);
-    if (algorithm === "selection") sorted = selectionSort([...nums]);
-    if (algorithm === "insertion") sorted = insertionSort([...nums]);
-    if (algorithm === "merge") sorted = mergeSort([...nums]);
-    if (algorithm === "quick") sorted = quickSort([...nums]);
+  for (let k = 0; k < temp.length; k++) {
+    a[left + k] = temp[k];
+    swapCount++;
 
-    showBars(sorted);
+    makeFrame(a, [left + k],
+      `Merging value ${temp[k]} into position ${left + k + 1}`,
+      "swap");
+  }
 
-    document.getElementById("result").textContent =
-        "Sorted Result: " + sorted.join(", ");
+  makeFrame(a, range(left, right),
+    `Merged sorted range ${left + 1} to ${right + 1}`);
 }
+
+function range(left, right) {
+  return Array.from({length: right - left + 1},
+    (_, i) => left + i);
+}
+
+// QUICK SORT
+function quickSort(a, low = 0, high = a.length - 1) {
+  if (low >= high) return;
+
+  const pivot = a[high];
+  let i = low;
+
+  makeFrame(a, [high],
+    `Quick Sort: pivot selected = ${pivot}`, "pivot");
+
+  for (let j = low; j < high; j++) {
+    comparisonCount++;
+
+    makeFrame(a, [j, high],
+      `Comparing ${a[j]} with pivot ${pivot}`, "pivot");
+
+    if (a[j] < pivot) {
+      if (i !== j) {
+        swap(a, i, j,
+          `${a[j]} is smaller than pivot; moving left`);
+      }
+      i++;
+    }
+  }
+
+  if (i !== high) {
+    swap(a, i, high,
+      `Placing pivot ${pivot} in its correct position`);
+  }
+
+  makeFrame(a, [i],
+    `Pivot ${pivot} placed. Partitioning continues.`,
+    "pivot");
+
+  quickSort(a, low, i - 1);
+  quickSort(a, i + 1, high);
+}
+
+function startSort() {
+  const nums = readNumbers();
+
+  if (!nums) {
+    $("message").textContent =
+      "Enter valid numbers (maximum 40).";
+    return;
+  }
+
+  stopTimer();
+  playing = false;
+  frames = [];
+  frameIndex = 0;
+  comparisonCount = 0;
+  swapCount = 0;
+  original = [...nums];
+
+  const a = [...nums];
+  const algorithm = $("algorithm").value;
+
+  if (algorithm === "bubble") bubbleSort(a);
+  if (algorithm === "selection") selectionSort(a);
+  if (algorithm === "insertion") insertionSort(a);
+  if (algorithm === "merge") mergeSort(a);
+  if (algorithm === "quick") quickSort(a);
+
+  $("complexity").textContent = {
+    bubble: "Time Complexity: O(n²) · Space: O(1)",
+    selection: "Time Complexity: O(n²) · Space: O(1)",
+    insertion: "Time Complexity: O(n²) · Best: O(n)",
+    merge: "Time Complexity: O(n log n) · Space: O(n)",
+    quick: "Average: O(n log n) · Worst: O(n²)"
+  }[algorithm];
+
+  if (frames.length) {
+    draw(original, [], "Ready! Press Play to watch the animation.");
+    $("steps").textContent = frames.length;
+    playing = true;
+    $("playBtn").textContent = "Pause";
+    playFrames();
+  }
+}
+
+function togglePlay() {
+  if (!frames.length) return;
+
+  playing = !playing;
+  $("playBtn").textContent = playing ? "Pause" : "Play";
+
+  if (playing) playFrames();
+  else stopTimer();
+}
+
+function playFrames() {
+  if (!playing || frameIndex >= frames.length) {
+    playing = false;
+    $("playBtn").textContent = "Play";
+    return;
+  }
+
+  const frame = frames[frameIndex];
+
+  draw(frame.arr, frame.marks, frame.message);
+
+  if (frame.type === "swap") {
+    frame.marks.forEach(i => {
+      const cards = $("visual").children;
+      if (cards[i]) cards[i].classList.add("swap");
+    });
+  }
+
+  if (frame.type === "pivot") {
+    frame.marks.forEach(i => {
+      const cards = $("visual").children;
+      if (cards[i]) cards[i].classList.add("pivot");
+    });
+  }
+
+  if (frame.type === "sorted") {
+    Array.from($("visual").children).forEach(card =>
+      card.classList.add("sorted"));
+  }
+
+  $("comparisons").textContent = frame.comparisons;
+  $("swaps").textContent = frame.swaps;
+  $("steps").textContent = frameIndex + 1;
+
+  frameIndex++;
+
+  timer = setTimeout(playFrames, Number($("speed").value));
+}
+
+resetSort();
 </script>
 
 </body>
-  </html>
+</html>
