@@ -1,5 +1,4 @@
-# sorting-algorithms
-A beginner -friendly python project demonstrating five sorting algorithms.
+
 
 <!DOCTYPE html>
 <html lang="en">
