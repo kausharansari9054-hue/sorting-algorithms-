@@ -12,6 +12,7 @@ A beginner-friendly project to understand and perform sorting algorithms.
 - [Python Sorting Code](./sorting.py)
 
 ## ✨ Features
+- Animated sorting
 - Bubble Sort
 - Selection Sort
 - Insertion Sort
